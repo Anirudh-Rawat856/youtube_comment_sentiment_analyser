@@ -19,6 +19,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.CommentSnippet;
 import com.google.api.services.youtube.model.CommentThread;
 import com.google.api.services.youtube.model.CommentThreadListResponse;
+import com.google.api.services.youtube.model.VideoListResponse;
 
 @Service
 public class YouTubeService {
@@ -32,34 +33,33 @@ public class YouTubeService {
 	}
 	
 	@SuppressWarnings("finally")
-	public List<Comment> fetchComments(String videoID) {
-		List<Comment> comments = new ArrayList<Comment>();
+	public YouTube youtubeBuilder() {
 		JsonFactory factory = JacksonFactory.getDefaultInstance();
-		
 		HttpTransport transport = null;
-		int exceptions = 0;
 		try {
 			transport = GoogleNetHttpTransport.newTrustedTransport();
 		} catch (GeneralSecurityException e) {
 			System.out.println(e.getMessage());
-			exceptions++;
-			
 		} catch (IOException e) {
 			e.getMessage();
-			exceptions++;
 		}
 		finally {
-			if (exceptions > 0) {
-				return comments;
-			}
-		}
-		try {
 			YouTube youtube = new YouTube.Builder(transport, factory, request -> {}).setApplicationName("Youtube Sentiment Analyser").build();
+			return youtube;
+		}
+	}
+		
+	@SuppressWarnings("finally")
+	public List<Comment> fetchComments(String videoID) {
+		List<Comment> comments = new ArrayList<Comment>();
+		try {
+			YouTube youtube = youtubeBuilder();
 			YouTube.CommentThreads.List request = youtube.commentThreads().list("snippet")
 					.setVideoId(videoID);
 			CommentThreadListResponse response = request.setKey(this.apiKey)
 					.setTextFormat("plaintext")
 					.setOrder("relevance")
+					.setPrettyPrint(true)
 					.setMaxResults(50L)
 					.execute();
 			for (CommentThread thread : response.getItems()) {
@@ -77,5 +77,29 @@ public class YouTubeService {
 		} finally {
 			return comments;
 		}
-	}	
+	}
+	
+	@SuppressWarnings("finally")
+	public String fetchTitle(String videoID) {
+		String title = "";
+		try {
+			YouTube youtube = youtubeBuilder();
+			YouTube.Videos.List requestVideo = youtube.videos()
+					.list("snippet")
+					.setId(videoID)
+					.setKey(this.apiKey);
+			VideoListResponse responseVideo = requestVideo.execute();
+			if (responseVideo.getItems().isEmpty()) {
+		        return "Unknown Title";
+		    }
+		    title = responseVideo.getItems().get(0).getSnippet().getTitle();	
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		finally {
+			return title;
+		}
+			
+	}
 }

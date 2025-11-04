@@ -44,9 +44,11 @@ public class SentimentController {
 	@GetMapping("/{videoId}")
     public Map<String, Object> analyse(@PathVariable String videoId) {
         List<Comment> comments = this.youtubeService.fetchComments(videoId);
+        String title = this.youtubeService.fetchTitle(videoId);
         long positive = 0, neutral = 0, negative = 0;
         Video video = this.videoRepository.findByVideoId(videoId).orElse(new Video());
         video.setVideoId(videoId);
+        video.setTitle(title);
         this.videoRepository.save(video);
         this.videoRepository.flush();
         for (Comment comment : comments) {
@@ -73,6 +75,7 @@ public class SentimentController {
         
         Map<String, Object> result = new HashMap<>();
         result.put("videoId", videoId);
+        result.put("title", title);
         result.put("totalComments", comments.size());
         result.put("positive", positive);
         result.put("neutral", neutral);

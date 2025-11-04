@@ -85,4 +85,8 @@ public class Video {
 	public String getVideoId() {
 		return this.videoId;
 	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
 }
