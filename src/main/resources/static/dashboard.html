@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Sentiment Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background: #f8f9fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+    }
+    #chart-container {
+      width: 70%;
+      margin: auto;
+    }
+    #videoId {
+      width: 250px;
+      padding: 6px;
+    }
+    table {
+      width: 90%;
+      margin: 2rem auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #333;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>YouTube Sentiment Analysis</h1>
+
+  <div style="text-align:center; margin-bottom:20px;">
+    <input type="text" id="videoId" placeholder="Enter Video ID">
+    <button onclick="loadData()">Analyse</button>
+  </div>
+
+  <div id="chart-container">
+    <canvas id="sentimentChart"></canvas>
+  </div>
+  
+  <h2 style="text-align:center;">Sample comments from video</h2>
+  <table class="SampleTable">
+    <thead>
+      <tr class="sampleHeadRow">
+        <th>Author</th>
+        <th>Comment Text</th>
+        <th>Likes</th>
+        <th>Sentiment</th>
+      </tr>
+    </thead>
+    <tbody id="SampleCommentsTable"></tbody>
+  </table>
+
+  <script>
+    let chart;
+
+    async function loadData() {
+      const videoId = document.getElementById('videoId').value.trim();
+      if (!videoId) return alert('Please enter a video ID.');
+
+      const response = await fetch(`/api/sentiment/${videoId}`);
+      if (!response.ok) {
+        alert('Error fetching data: ' + response.status);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('API Data:', data);
+
+      const labels = ['Positive', 'Neutral', 'Negative'];
+      const values = [data.positive, data.neutral, data.negative];
+
+      if (chart) chart.destroy(); 
+
+      const ctx = document.getElementById('sentimentChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            backgroundColor: ['#4caf50', '#ffeb3b', '#f44336'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: `Sentiment Analysis for Video: https://www.youtube.com/watch?v=${videoId}`
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+	  
+      var commentsData = data.sample || [];
+      var table = document.getElementById("SampleCommentsTable");
+      table.innerHTML = '';
+
+      for (var i = 0; i < commentsData.length; i++) {
+        var row = `
+          <tr>
+            <td>${commentsData[i].author}</td>
+            <td>${commentsData[i].commentText}</td>
+            <td>${commentsData[i].likes}</td>
+            <td>${commentsData[i].sentiment}</td>
+          </tr>
+        `;
+        table.innerHTML += row;
+      }
+	  
+    }
+  </script>
+</body>
+</html>

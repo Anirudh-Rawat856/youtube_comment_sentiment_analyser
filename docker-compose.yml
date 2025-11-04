@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:15
+    container_name: yt_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: yt_sentiment_app
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env   # ← tells Docker to load environment variables from the file
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_SQL_INIT_MODE: always
+      SPRING_SQL_INIT_SCHEMA_LOCATIONS: classpath:schema.sql
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}  # ← key is pulled from .env securely
+    restart: always
+
+volumes:
+  pgdata:
