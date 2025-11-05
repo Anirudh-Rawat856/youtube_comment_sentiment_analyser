@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.anirudh.youtube_comment_sentiment_analyser.model.Comment;
@@ -50,6 +51,7 @@ public class YouTubeService {
 	}
 		
 	@SuppressWarnings("finally")
+	@Async
 	public List<Comment> fetchComments(String videoID) {
 		List<Comment> comments = new ArrayList<Comment>();
 		try {
@@ -80,6 +82,7 @@ public class YouTubeService {
 	}
 	
 	@SuppressWarnings("finally")
+	@Async
 	public String fetchTitle(String videoID) {
 		String title = "";
 		try {

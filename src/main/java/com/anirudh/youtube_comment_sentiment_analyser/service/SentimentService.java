@@ -4,6 +4,7 @@ import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
+
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -16,7 +17,7 @@ public class SentimentService {
         props.setProperty("annotators", "tokenize,ssplit,parse,sentiment");
         this.pipeline = new StanfordCoreNLP(props);
     }
-
+    
     public String analyseSentiment(String text) {
         if (text == null || text.isEmpty()) return "NEUTRAL";
 
