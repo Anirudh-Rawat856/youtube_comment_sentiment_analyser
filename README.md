@@ -29,9 +29,6 @@ Developed utilising **Spring Boot**, **PostgreSQL**, **Chart.js**, and **Docker*
 
 1) Clone the Repository
 
-git clone https://github.com/<yourusername>/<yourrepo>.git
-cd <yourrepo>
-
 2️) Create a .env File
 Add your secrets here:
 
