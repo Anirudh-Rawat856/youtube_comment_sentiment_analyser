@@ -25,7 +25,7 @@ Developed utilising **Spring Boot**, **PostgreSQL**, **Chart.js**, and **Docker*
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 1) Clone the Repository
 
