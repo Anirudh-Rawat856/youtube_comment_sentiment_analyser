@@ -65,8 +65,8 @@ SPRING_DATASOURCE_URL	(optional) - custom DB URL
 API Endpoints:
 Method	Endpoint	Description
 
-GET	/api/sentiment/{videoId}	Analyze comments for a video
+GET	/api/sentiment/{videoId} - Analyze comments for a video
 
-GET	/dashboard.html	Display the analysis dashboard
+GET	/dashboard.html	- Display the analysis dashboard
 AWS EC2 / DigitalOcean via Docker Compose
 
